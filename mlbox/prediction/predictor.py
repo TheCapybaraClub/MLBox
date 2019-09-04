@@ -504,15 +504,31 @@ class Predictor():
                         print("no saved best params object found, predicting using newly trained object...")
                         pass
 
-                    if from_saved:
-                        print("Saved objects have been loaded, recreting scoring pipeline.")
-                        pipe = [("ne", ne), ("ce", ce)]
-                        pipe.append(("fs", fs))
-                        pipe.append(("est", est))
-                        pp = Pipeline(pipe)
-                        pp = pp.set_params(**params)
-                    else:
-                        print("No saved objects have been loaded, using newly trained pipe.")
+                    #try pipe rebuild - fails
+                    #if from_saved:
+                    #    print("Saved objects have been loaded, recreting scoring pipeline.")
+                    #    pipe = [("ne", ne), ("ce", ce)]
+                    #    pipe.append(("fs", fs))
+                    #    pipe.append(("est", est)) #doesn't work - type <class 'mlbox.model.classification.classifier.Classifier'>) doesn't work
+                    #    pp = Pipeline(pipe) #mlbox.model.classification.classifier.Classifier, cannot be piped
+                    #    pp = pp.set_params(**params)
+                    #else:
+                    #    print("No saved objects have been loaded, using newly trained pipe.")
+
+
+                    #The entire pickled pipe
+                    try:
+                        fhand = open(self.to_path + "/" + "scoring_pipeline.obj", 'rb')
+                        pp = pickle.load(fhand)
+                        fhand.close()
+                        print("saved scoring pipeline object found, predicting using previously trained object...")
+                        from_saved = True
+
+                    except:
+                        #if the file is not found, maybe it hasn't been created yet
+                        #Is this the first run? 
+                        print("no saved scoring pipeline object found, predicting using newly trained object...")
+                        pass
 
                     try:
                         if(self.verbose):
