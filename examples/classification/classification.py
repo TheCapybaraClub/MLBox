@@ -67,27 +67,3 @@ best = opt.optimise(space, data, 15)
 # Make prediction and save the results in save folder.
 prd = Predictor()
 prd.fit_predict(best, data)
-to_path='save'
-try:
-    fhand = open(to_path + '/scoring_best.obj', 'wb')
-    pickle.dump(best, fhand)
-    fhand.close()
-    print("Dumpped scoring_best.obj into directory")
-except:
-    print("unable to dump scoring_best.obj into directory")
-
-try:
-    fhand = open(to_path + '/scoring_pipeline.obj', 'wb')
-    pickle.dump(prd.scoring_pipeline, fhand)
-    fhand.close()
-    print("Dumpped scoring_pipeline.obj into directory")
-except:
-    print("unable to dump scoring_pipeline.obj into directory")
-
-try:
-    fhand = open(to_path + '/scoring_encoder.obj', 'wb')
-    pickle.dump(prd.scoring_encoder, fhand)
-    fhand.close()
-    print("Dumpped scoring_encoder.obj into directory")
-except:
-    print("unable to dump scoring_encoder.obj into directory")

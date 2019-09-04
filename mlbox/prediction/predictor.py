@@ -412,15 +412,7 @@ class Predictor():
                 if (df['target'].dtype == 'int'):
 
                     enc_name = "target_encoder.obj"
-                    ne_name  = "ne_encoder.obj"
-                    ce_name  = "ce_encoder.obj"
-                    fs_name  = "fs_encoder.obj"
-                    est_name = "est_encoder.obj"
-                    best_name = "scoring_best.obj"
-
-                    #to be added
-                    #fs_name = "target_encoder.obj"
-                    #stck_i_name = "target_encoder.obj"
+                    pipeline_name = "scoring_pipeline.obj"
 
                     #enc
                     try:
@@ -433,100 +425,17 @@ class Predictor():
                         raise ValueError("Unable to load '" + enc_name +
                                          "' from directory : " + self.to_path)
 
-                    from_saved = False
-                    #ne
+                    #pipeline
                     try:
-                        fhand = open(self.to_path + "/" + ne_name, 'rb')
-                        ne = pickle.load(fhand)
-                        fhand.close()
-                        print("saved ne object found, predicting using previously trained object...")
-                        from_saved = True
 
-                    except:
-                        #if the file is not found, maybe it hasn't been created yet
-                        #Is this the first run? 
-                        print("no saved ne object found, predicting using newly trained object...")
-                        pass
-
-                    #ce
-                    try:
-                        fhand = open(self.to_path + "/" + ce_name, 'rb')
-                        ne = pickle.load(fhand)
-                        fhand.close()
-                        print("saved ce object found, predicting using previously trained object...")
-                        from_saved = True
-
-                    except:
-                        #if the file is not found, maybe it hasn't been created yet
-                        #Is this the first run? 
-                        print("no saved ce object found, predicting using newly trained object...")
-                        pass
-
-                    #fs
-                    try:
-                        fhand = open(self.to_path + "/" + fs_name, 'rb')
-                        ne = pickle.load(fhand)
-                        fhand.close()
-                        print("saved fs object found, predicting using previously trained object...")
-                        from_saved = True
-
-                    except:
-                        #if the file is not found, maybe it hasn't been created yet
-                        #Is this the first run? 
-                        print("no saved fs object found, predicting using newly trained object...")
-                        pass
-
-                    #est
-                    try:
-                        fhand = open(self.to_path + "/" + est_name, 'rb')
-                        ne = pickle.load(fhand)
-                        fhand.close()
-                        print("saved est object found, predicting using previously trained object...")
-                        from_saved = True
-
-                    except:
-                        #if the file is not found, maybe it hasn't been created yet
-                        #Is this the first run? 
-                        print("no saved est object found, predicting using newly trained object...")
-                        pass
-
-                    #best params
-                    try:
-                        fhand = open(self.to_path + "/" + best_name, 'rb')
-                        params = pickle.load(fhand)
-                        fhand.close()
-                        print("saved best params object found, predicting using previously trained object...")
-                        from_saved = True
-
-                    except:
-                        #if the file is not found, maybe it hasn't been created yet
-                        #Is this the first run? 
-                        print("no saved best params object found, predicting using newly trained object...")
-                        pass
-
-                    #try pipe rebuild - fails
-                    #if from_saved:
-                    #    print("Saved objects have been loaded, recreting scoring pipeline.")
-                    #    pipe = [("ne", ne), ("ce", ce)]
-                    #    pipe.append(("fs", fs))
-                    #    pipe.append(("est", est)) #doesn't work - type <class 'mlbox.model.classification.classifier.Classifier'>) doesn't work
-                    #    pp = Pipeline(pipe) #mlbox.model.classification.classifier.Classifier, cannot be piped
-                    #    pp = pp.set_params(**params)
-                    #else:
-                    #    print("No saved objects have been loaded, using newly trained pipe.")
-
-
-                    #The entire pickled pipe
-                    try:
-                        fhand = open(self.to_path + "/" + "scoring_pipeline.obj", 'rb')
+                        fhand = open(self.to_path + "/" + pipeline_name, 'rb')
                         pp = pickle.load(fhand)
                         fhand.close()
                         print("saved scoring pipeline object found, predicting using previously trained object...")
-                        from_saved = True
 
                     except:
                         #if the file is not found, maybe it hasn't been created yet
-                        #Is this the first run? 
+                        #Is this the first training run? 
                         print("no saved scoring pipeline object found, predicting using newly trained object...")
                         pass
 
@@ -582,7 +491,7 @@ class Predictor():
                     print("")
                     print("> Overview on predictions : ")
                     print("")
-                    print(pred.head(10))
+                    print(pred.head(20))
 
                 ##########################################
                 #           Dumping predictions
@@ -599,48 +508,27 @@ class Predictor():
                             index=True)
 
 
-                #Pipeline Objects
+                #Pipeline Object
                 #pipe = [("ne", ne), ("ce", ce), ("fs", fs), ("stck_i", stck_i), ("est": est)]
-                self.scoring_encoder = enc
+                #self.scoring_encoder = enc #already integrated, .obj file created on read/prep
                 self.scoring_pipeline = pp
 
-                #ne
+                #dump pipeline
+                pp_overwrite = True #check if file exists, provide option
                 try:
-                    fhand = open(self.to_path + '/ne_encoder.obj', 'wb')
-                    pickle.dump(ne, fhand)
-                    fhand.close()
-                    print("Dumpped ne_encoder.obj into directory")
-                except:
-                    print("unable to dump ne_encoder.obj into directory")
+                    if pp_overwrite:
+                        fhand = open(self.to_path + "/" + pipeline_name, 'rb')
+                        pickle.dump(pp, fhand)
+                        fhand.close()
+                        print("saved scoring pipeline object")
 
-                #ce
-                try:
-                    fhand = open(self.to_path + '/ce_encoder.obj', 'wb')
-                    pickle.dump(ce, fhand)
-                    fhand.close()
-                    print("Dumpped ce_encoder.obj into directory")
-                except:
-                    print("unable to dump ce_encoder.obj into directory")
-
-                #fs
-                try:
-                    fhand = open(self.to_path + '/fs_encoder.obj', 'wb')
-                    pickle.dump(fs, fhand)
-                    fhand.close()
-                    print("Dumpped fs_encoder.obj into directory")
-                except:
-                    print("unable to dump fs_encoder.obj into directory")
-
-                #est
-                try:
-                    fhand = open(self.to_path + '/est_encoder.obj', 'wb')
-                    pickle.dump(est, fhand)
-                    fhand.close()
-                    print("Dumpped est_encoder.obj into directory")
+                    else:
+                        pass
 
                 except:
-                    print("unable to dump est_encoder.obj into directory")
-
-
+                    #if the file is not found, maybe it hasn't been created yet
+                    #Is this the first training run? 
+                    print("unable to save scoring pipeline object")
+                    pass
 
         return self
