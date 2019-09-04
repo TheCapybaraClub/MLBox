@@ -414,6 +414,7 @@ class Predictor():
                     enc_name = "target_encoder.obj"
                     ne_name  = "ne_encoder.obj"
                     ce_name  = "ce_encoder.obj"
+                    fs_name  = "fs_encoder.obj"
                     est_name = "est.obj"
 
                     #to be added
@@ -460,6 +461,20 @@ class Predictor():
                         print("no saved ce object found, predicting using newly trained object...")
                         pass
 
+                    #fs
+                    try:
+                        fhand = open(self.to_path + "/" + fs_name, 'rb')
+                        ne = pickle.load(fhand)
+                        fhand.close()
+                        print("saved fs object found, predicting using previously trained object...")
+                        from_saved = True
+
+                    except:
+                        #if the file is not found, maybe it hasn't been created yet
+                        #Is this the first run? 
+                        print("no saved fs object found, predicting using newly trained object...")
+                        pass
+
                     #est
                     try:
                         fhand = open(self.to_path + "/" + est_name, 'rb')
@@ -477,6 +492,7 @@ class Predictor():
                     if from_saved:
                         print("Saved objects have been loaded, recreting scoring pipeline.")
                         pipe = [("ne", ne), ("ce", ce)]
+                        pipe.append(("fs", fs))
                         pipe.append(("est", est))
                         pp = Pipeline(pipe)
                     else:
@@ -573,6 +589,15 @@ class Predictor():
                     print("Dumpped ce_encoder.obj into directory")
                 except:
                     print("unable to dump ce_encoder.obj into directory")
+
+                #fs
+                try:
+                    fhand = open(self.to_path + '/fs_encoder.obj', 'wb')
+                    pickle.dump(fs, fhand)
+                    fhand.close()
+                    print("Dumpped fs_encoder.obj into directory")
+                except:
+                    print("unable to dump fs_encoder.obj into directory")
 
                 #est
                 try:
