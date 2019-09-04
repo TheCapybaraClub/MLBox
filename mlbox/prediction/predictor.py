@@ -517,7 +517,7 @@ class Predictor():
                 pp_overwrite = True #check if file exists, provide option
                 try:
                     if pp_overwrite:
-                        fhand = open(self.to_path + "/" + pipeline_name, 'rb')
+                        fhand = open(self.to_path + "/" + pipeline_name, 'wb')
                         pickle.dump(pp, fhand)
                         fhand.close()
                         print("saved scoring pipeline object")
@@ -525,10 +525,10 @@ class Predictor():
                     else:
                         pass
 
-                except:
+                except Exception as e:
                     #if the file is not found, maybe it hasn't been created yet
                     #Is this the first training run? 
-                    print("unable to save scoring pipeline object")
+                    print("unable to save scoring pipeline object", e)
                     pass
 
         return self
