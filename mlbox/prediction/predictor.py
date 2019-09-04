@@ -415,7 +415,7 @@ class Predictor():
                     ne_name  = "ne_encoder.obj"
                     ce_name  = "ce_encoder.obj"
                     fs_name  = "fs_encoder.obj"
-                    est_name = "est.obj"
+                    est_name = "est_encoder.obj"
 
                     #to be added
                     #fs_name = "target_encoder.obj"
