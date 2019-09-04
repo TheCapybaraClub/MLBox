@@ -416,6 +416,7 @@ class Predictor():
                     ce_name  = "ce_encoder.obj"
                     fs_name  = "fs_encoder.obj"
                     est_name = "est_encoder.obj"
+                    best_name = "scoring_best.obj"
 
                     #to be added
                     #fs_name = "target_encoder.obj"
@@ -489,12 +490,27 @@ class Predictor():
                         print("no saved est object found, predicting using newly trained object...")
                         pass
 
+                    #best params
+                    try:
+                        fhand = open(self.to_path + "/" + best_name, 'rb')
+                        params = pickle.load(fhand)
+                        fhand.close()
+                        print("saved best params object found, predicting using previously trained object...")
+                        from_saved = True
+
+                    except:
+                        #if the file is not found, maybe it hasn't been created yet
+                        #Is this the first run? 
+                        print("no saved best params object found, predicting using newly trained object...")
+                        pass
+
                     if from_saved:
                         print("Saved objects have been loaded, recreting scoring pipeline.")
                         pipe = [("ne", ne), ("ce", ce)]
                         pipe.append(("fs", fs))
                         pipe.append(("est", est))
                         pp = Pipeline(pipe)
+                        pp = pp.set_params(**params)
                     else:
                         print("No saved objects have been loaded, using newly trained pipe.")
 
