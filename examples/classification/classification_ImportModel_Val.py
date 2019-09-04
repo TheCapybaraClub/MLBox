@@ -82,7 +82,12 @@ else:
 
 if(True):
     print("")
-    print("dumping predictions into directory : "+self.to_path + " ...")
+    print("> Overview on predictions : ")
+    print("")
+    print(pred.head(20))
+    print("")
+    print("")
+    print("dumping predictions into directory : "+to_path + " ...")
 
 pred.to_csv(to_path
             + "/"
